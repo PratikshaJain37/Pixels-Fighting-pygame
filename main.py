@@ -3,6 +3,7 @@
 
 # Imports #
 import pygame
+from pygame.locals import *
 from helpers import *
 import random
 import numpy as np
@@ -11,78 +12,70 @@ import numpy as np
 pygame.init()
 
 # Initialize screen, status and clock
-screen = pygame.display.set_mode((750,750))
+screen = pygame.display.set_mode((500,500))
 running = True
 clock = pygame.time.Clock()
 
 
 # Defining Colors 
-WHITE = (0,128,255)
+DARK_BLUE = (0,128,255)
 BLUE = (0,200,255)
 
 # Starting status of array
-current_status = np.array([[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1]])
-
-# This will be a list that will contain all the boxes (sprites) used.
-all_sprites_list = pygame.sprite.Group()
+current_status_array = np.array([[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1]])
 
 
-class Box(pygame.sprite.Sprite):
-    '''
-    This class represents the boxes. Derives from Sprite class in Pygame.
-    '''
-    def __init__(self, x, y):
-        
-        # Call the parent class (Sprite) constructor
-        super().__init__()
-
-        self.image = pygame.Surface((40,40))
-        self.rect = self.image.get_rect()
-        if current_status[x][y] == 0:
-            self.image.fill(BLUE)
+class Box():
+    
+    def __init__(self, x,y, status):
+        self.status = status
+        self.x = x
+        self.y = y
+    
+    def draw(self):
+        if self.status == 0:
+            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
         else:
-            self.image.fill(WHITE)
-
+            pygame.draw.rect(screen, BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
+    
     def update(self):
-        updated_status = UpdateArray(current_status)
-        if current_status[x][y] == 0:
-            self.image.fill(BLUE)
+        self.status = current_status_array[self.x][self.y]
+
+        if self.status == 0:
+            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
         else:
-            self.image.fill(WHITE)
-
-
+            pygame.draw.rect(screen, BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
+    
+boxes = []
 
 for i in range(64):
 
-    # This represents the x,y position in array
     x = i//8
     y = i%8
 
-    # This represents a box
-    box = Box(x,y)
-    
-    # Set location for the block
-    box.rect.x = 30 + 45*x
-    box.rect.y = 30 + 45*y
-   
-    # Add the block to the list of objects
-    all_sprites_list.add(box)
+    if y > 3:
+        boxes.append(Box(x,y,1))
+    else:
+        boxes.append(Box(x,y,0))
+
 
 
 while running:
-  
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Update sprites - Game logic
-    all_sprites_list.update()
+    screen.lock()
 
-    # Drawing on screen
-    all_sprites_list.draw(screen)
-
+    current_status_array = UpdateArray(current_status_array)
+    for box in boxes:
+        box.update()
+        
+    
     # Refresh screen
-    pygame.display.flip()
+    screen.unlock()
+    pygame.display.update()
+    clock.tick(10)
+    
 
-    # Number of frames per second
-    clock.tick(60)
