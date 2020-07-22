@@ -1,6 +1,8 @@
 # Main.py #
 # Author: Pratiksha Jain #
 
+# ---------------------#
+
 # Imports #
 import pygame
 from pygame.locals import *
@@ -8,74 +10,91 @@ from helpers import *
 import random
 import numpy as np
 
+# ---------------------#
+
 # Initialize Pygame
 pygame.init()
 
 # Initialize screen, status and clock
-screen = pygame.display.set_mode((500,500))
+screen = pygame.display.set_mode((700,700))
 running = True
 clock = pygame.time.Clock()
-
 
 # Defining Colors 
 DARK_BLUE = (0,128,255)
 BLUE = (0,200,255)
 
-# Starting status of array
-current_status_array = np.array([[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1]])
+# Initialize number of rows/columns
+INT = 32
+INT_SQ = INT*INT
 
+# Initialize Status Array - Making an array with half dead and half alive
+zero = np.zeros((INT,INT//2), dtype=int)
+one = np.ones((INT,INT//2), dtype=int)
+current_status_array = np.concatenate((zero,one), axis=1)
+print(current_status_array)
 
+# ---------------------#
+
+# Defining Box Class
 class Box():
     
-    def __init__(self, x,y, status):
-        self.status = status
+    # Status can be dead (0) or alive(1); 
+    def __init__(self, x, y, alive):
+        self.alive = alive
         self.x = x
         self.y = y
     
+    # Function to draw python rect; color depends on alive status
     def draw(self):
-        if self.status == 0:
-            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
+        if self.alive == 0:
+            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 11*self.y, 30 + 11*self.x, 10,10))
         else:
-            pygame.draw.rect(screen, BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
-    
-    def update(self):
-        self.status = current_status_array[self.x][self.y]
+            pygame.draw.rect(screen, BLUE, Rect(30 + 11*self.y, 30 + 11*self.x, 10,10))
 
-        if self.status == 0:
-            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
-        else:
-            pygame.draw.rect(screen, BLUE, Rect(30 + 45*self.x, 30 + 45*self.y, 40,40))
-    
+    # Function to update python rect; as per current_status_array
+    def update(self):
+        self.alive = current_status_array[self.x][self.y]
+        self.draw()
+
+# ---------------------#
+
+# Creating 64 instances of box class, and appending them to a list for accessibility
+
 boxes = []
 
-for i in range(64):
+for i in range(INT_SQ):
 
-    x = i//8
-    y = i%8
+    # x,y will be filled sequentially 
+    x = i//INT
+    y = i%INT
 
-    if y > 3:
-        boxes.append(Box(x,y,1))
-    else:
-        boxes.append(Box(x,y,0))
+    # Alive status depening on current array
+    boxes.append(Box(x,y,current_status_array[x][y]))
 
+# ---------------------#
 
+# Main python loop
 
 while running:
     
+    # Main python quit function
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    screen.lock()
+    # For updating array
+    #screen.lock()
 
-    current_status_array = UpdateArray(current_status_array)
+    current_status_array = UpdateArray(current_status_array, INT)
     for box in boxes:
         box.update()
         
     
     # Refresh screen
-    screen.unlock()
+    #screen.unlock()
     pygame.display.update()
     clock.tick(10)
-    
+
+# ---------------------#
 
