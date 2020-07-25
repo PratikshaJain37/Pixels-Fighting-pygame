@@ -9,6 +9,7 @@ from pygame.locals import *
 from helpers import *
 import random
 import numpy as np
+import time
 
 # ---------------------#
 
@@ -21,18 +22,20 @@ running = True
 clock = pygame.time.Clock()
 
 # Defining Colors 
-DARK_BLUE = (0,128,255)
-BLUE = (0,200,255)
+COLOR_ALIVE = (0,128,255)
+COLOR_DEAD = (0,200,255)
 
 # Initialize number of rows/columns
 INT = 100
 INT_SQ = INT*INT
 
+# Initialize size of arrays
+SIZE = 5
+
 # Initialize Status Array - Making an array with half dead and half alive
 zero = np.zeros((INT,INT//2), dtype=int)
 one = np.ones((INT,INT//2), dtype=int)
 current_status_array = np.concatenate((zero,one), axis=1)
-
 
 # ---------------------#
 
@@ -41,25 +44,29 @@ class Box():
     
     # Status can be dead (0) or alive(1); 
     def __init__(self, x, y, alive):
-        self.alive = alive
         self.x = x
         self.y = y
+        self.alive = alive
+        self.surf = pygame.Surface((SIZE,SIZE))
+        self.rect = (30 + SIZE*self.y, 30 + SIZE*self.x)
     
-    # Function to draw python rect; color depends on alive status
-    def draw(self):
+    # Function to fill surface with color
+    def assign_color(self):
         if self.alive == 0:
-            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 2*self.y, 30 + 1*self.x, 1,1))
+            self.surf.fill(COLOR_DEAD)
         else:
-            pygame.draw.rect(screen, BLUE, Rect(30 + 2*self.y, 30 + 1*self.x, 1,1))
+            self.surf.fill(COLOR_ALIVE)
+        screen.blit(self.surf,self.rect)
 
-    # Function to update python rect; as per current_status_array
+    # Function to update surface; as per current_status_array
     def update(self):
         self.alive = current_status_array[self.x][self.y]
-        self.draw()
+        self.assign_color()
+     
 
 # ---------------------#
 
-# Creating 64 instances of box class, and appending them to a list for accessibility
+# Creating 'INT_SQ' instances of box class, and appending them to a list for accessibility
 
 boxes = []
 
@@ -93,7 +100,7 @@ while running:
     pygame.display.update()
 
     # For FPS of display
-    clock.tick(10)
+    time.sleep(0.1)
 
 # ---------------------#
 

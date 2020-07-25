@@ -1,5 +1,6 @@
 venv/
 __pycache__/
 pygame-1.9.6/
-venv/trial.py
+trial.py
 logic.txt
+README.md 
