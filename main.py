@@ -1,4 +1,4 @@
-# Main.py #
+# Main.py - Pixels Fighting #
 # Author: Pratiksha Jain #
 
 # ---------------------#
@@ -25,14 +25,14 @@ DARK_BLUE = (0,128,255)
 BLUE = (0,200,255)
 
 # Initialize number of rows/columns
-INT = 32
+INT = 100
 INT_SQ = INT*INT
 
 # Initialize Status Array - Making an array with half dead and half alive
 zero = np.zeros((INT,INT//2), dtype=int)
 one = np.ones((INT,INT//2), dtype=int)
 current_status_array = np.concatenate((zero,one), axis=1)
-print(current_status_array)
+
 
 # ---------------------#
 
@@ -48,9 +48,9 @@ class Box():
     # Function to draw python rect; color depends on alive status
     def draw(self):
         if self.alive == 0:
-            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 11*self.y, 30 + 11*self.x, 10,10))
+            pygame.draw.rect(screen, DARK_BLUE, Rect(30 + 2*self.y, 30 + 1*self.x, 1,1))
         else:
-            pygame.draw.rect(screen, BLUE, Rect(30 + 11*self.y, 30 + 11*self.x, 10,10))
+            pygame.draw.rect(screen, BLUE, Rect(30 + 2*self.y, 30 + 1*self.x, 1,1))
 
     # Function to update python rect; as per current_status_array
     def update(self):
@@ -83,17 +83,16 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # For updating array
-    #screen.lock()
-
+    # For updating array and boxes status
     current_status_array = UpdateArray(current_status_array, INT)
     for box in boxes:
         box.update()
         
     
     # Refresh screen
-    #screen.unlock()
     pygame.display.update()
+
+    # For FPS of display
     clock.tick(10)
 
 # ---------------------#
