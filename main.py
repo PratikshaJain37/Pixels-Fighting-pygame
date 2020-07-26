@@ -99,7 +99,7 @@ while running:
     # Refresh screen
     pygame.display.update()
 
-    # For FPS of display
+    # A more optimal version of the clock.tick() function, determines fps of display basically
     time.sleep(0.1)
 
 # ---------------------#
