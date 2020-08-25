@@ -1,4 +1,5 @@
 # Helpers.py - Pixels Fighting #
+# Author: Pratiksha Jain #
 
 # ---------------------#
 
@@ -51,4 +52,7 @@ def GetRatio(x,y,current_status_array,INT):
     else:
         return 1, around_alive/around_total
 
+def IsAliveWinning(current_status_array, INT_SQ):
+    alive = np.count_nonzero(current_status_array == 1)
+    return alive/INT_SQ
 # ---------------------#

@@ -13,6 +13,13 @@ import time
 
 # ---------------------#
 
+# Initialize number of rows/columns
+INT = 100
+INT_SQ = INT*INT
+
+# Initialize size of arrays
+SIZE = 5
+
 # Initialize Pygame
 pygame.init()
 
@@ -24,13 +31,6 @@ clock = pygame.time.Clock()
 # Defining Colors 
 COLOR_ALIVE = (0,128,255)
 COLOR_DEAD = (0,200,255)
-
-# Initialize number of rows/columns
-INT = 100
-INT_SQ = INT*INT
-
-# Initialize size of arrays
-SIZE = 5
 
 # Initialize Status Array - Making an array with half dead and half alive
 zero = np.zeros((INT,INT//2), dtype=int)
@@ -81,6 +81,29 @@ for i in range(INT_SQ):
 
 # ---------------------#
 
+# For Ratio Text to be displayed and updated continuously
+
+# Defining font style and size
+font = pygame.font.Font('freesansbold.ttf', 32) 
+
+def UpdateRatioText():
+
+    # For the alive ones
+    text_alive = font.render('Alive: {:.4f}'.format(IsAliveWinning(current_status_array, INT_SQ)), True, COLOR_ALIVE, (0,0,0))
+    textRectAlive = text_alive.get_rect()
+    textRectAlive.center = (420, 570)
+
+    # For the dead ones
+    text_dead = font.render('Dead: {:.4f}'.format(1-IsAliveWinning(current_status_array, INT_SQ)), True, COLOR_DEAD, (0,0,0))
+    textRectDead = text_dead.get_rect()
+    textRectDead.center = (140, 570)
+
+    # Updating the font on the rect
+    screen.blit(text_alive, textRectAlive) 
+    screen.blit(text_dead, textRectDead)
+
+# ---------------------#
+
 # Main python loop
 
 while running:
@@ -94,8 +117,10 @@ while running:
     current_status_array = UpdateArray(current_status_array, INT)
     for box in boxes:
         box.update()
-        
-    
+
+    # Update Ratio text
+    UpdateRatioText()
+
     # Refresh screen
     pygame.display.update()
 
