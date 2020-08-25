@@ -24,18 +24,29 @@ SIZE = 5
 pygame.init()
 
 # Initialize screen, status and clock
-screen = pygame.display.set_mode((700,700))
+screen = pygame.display.set_mode((80+INT*SIZE,160+INT*SIZE))
 running = True
 clock = pygame.time.Clock()
 
 # Defining Colors 
-COLOR_ALIVE = (0,128,255)
-COLOR_DEAD = (0,200,255)
+COLOR_ALIVE = (random.randint(1,256),random.randint(0,256),random.randint(0,256))
+COLOR_DEAD = (random.randint(1,256),random.randint(0,256),random.randint(0,256))
 
 # Initialize Status Array - Making an array with half dead and half alive
 zero = np.zeros((INT,INT//2), dtype=int)
 one = np.ones((INT,INT//2), dtype=int)
 current_status_array = np.concatenate((zero,one), axis=1)
+
+# ---------------------#
+
+# For Title Text to be displayed
+
+# Defining font style and size
+font = pygame.font.Font('freesansbold.ttf', 32) 
+
+text_title = font.render('Pixels Fighting', True, (255,255,255), (0,0,0))
+textRectTitle = text_title.get_rect()
+textRectTitle.center = (40+INT*SIZE/2, 40)
 
 # ---------------------#
 
@@ -48,7 +59,7 @@ class Box():
         self.y = y
         self.alive = alive
         self.surf = pygame.Surface((SIZE,SIZE))
-        self.rect = (30 + SIZE*self.y, 30 + SIZE*self.x)
+        self.rect = (40 + SIZE*self.y, 100 + SIZE*self.x)
     
     # Function to fill surface with color
     def assign_color(self):
@@ -84,19 +95,21 @@ for i in range(INT_SQ):
 # For Ratio Text to be displayed and updated continuously
 
 # Defining font style and size
-font = pygame.font.Font('freesansbold.ttf', 32) 
+font = pygame.font.Font('freesansbold.ttf', 25) 
 
 def UpdateRatioText():
 
     # For the alive ones
     text_alive = font.render('Alive: {:.4f}'.format(IsAliveWinning(current_status_array, INT_SQ)), True, COLOR_ALIVE, (0,0,0))
     textRectAlive = text_alive.get_rect()
-    textRectAlive.center = (420, 570)
+    textRectAlive.x = 80 + INT*SIZE - 210
+    textRectAlive.y = 115 + INT*SIZE
 
     # For the dead ones
     text_dead = font.render('Dead: {:.4f}'.format(1-IsAliveWinning(current_status_array, INT_SQ)), True, COLOR_DEAD, (0,0,0))
     textRectDead = text_dead.get_rect()
-    textRectDead.center = (140, 570)
+    textRectDead.x = 60
+    textRectDead.y = 115 + INT*SIZE
 
     # Updating the font on the rect
     screen.blit(text_alive, textRectAlive) 
@@ -120,6 +133,9 @@ while running:
 
     # Update Ratio text
     UpdateRatioText()
+
+    # Display Title
+    screen.blit(text_title, textRectTitle)
 
     # Refresh screen
     pygame.display.update()
